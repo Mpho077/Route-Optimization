@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Daily Route Optimization Cron -->
+    <record id="ir_cron_daily_route_optimization" model="ir.cron">
+        <field name="name">Route Optimization: Daily Route Calculation</field>
+        <field name="model_id" ref="model_route_optimizer"/>
+        <field name="state">code</field>
+        <field name="code">model.optimize_daily_routes()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=5, minute=0, second=0))"/>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+        <field name="doall" eval="False"/>
+        <field name="priority">10</field>
+    </record>
+</odoo>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Settings form: Route Optimization section -->
+    <record id="res_config_settings_view_form_route" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.route.optimization</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Route Optimization"
+                     data-key="route_optimization">
+
+                    <h2>Routing Provider</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="routing_provider"/>
+                                <div class="text-muted">
+                                    Select which routing engine to use for distance/time calculations.
+                                </div>
+                                <field name="routing_provider" class="w-50"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="geocoding_provider"/>
+                                <div class="text-muted">
+                                    Can differ from routing — e.g. Google for geocoding, OSRM for routing.
+                                </div>
+                                <field name="geocoding_provider" class="w-50"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt16">OSRM Settings</h3>
+                    <div class="row mt8 o_settings_container"
+                         invisible="routing_provider != 'osrm' and geocoding_provider != 'osrm'">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="osrm_base_url"/>
+                                <field name="osrm_base_url" class="w-75"/>
+                                <div class="text-muted">
+                                    URL of your self-hosted OSRM Docker container (e.g. http://localhost:5000).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt16">Google Maps Settings</h3>
+                    <div class="row mt8 o_settings_container"
+                         invisible="routing_provider != 'google_maps' and geocoding_provider != 'google_maps'">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="google_maps_api_key"/>
+                                <field name="google_maps_api_key" class="w-75" password="True"/>
+                                <div class="text-muted">
+                                    Requires Distance Matrix, Directions, and Geocoding APIs enabled.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="google_maps_base_url"/>
+                                <field name="google_maps_base_url" class="w-75"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt16">Connection Test</h3>
+                    <div class="row mt8 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <button name="action_test_routing_provider"
+                                        string="Test Routing Provider"
+                                        type="object"
+                                        class="btn-primary"/>
+                                <button name="action_test_geocoding_provider"
+                                        string="Test Geocoding Provider"
+                                        type="object"
+                                        class="btn-secondary ms-2"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt16">General</h3>
+                    <div class="row mt8 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="request_timeout"/>
+                                <field name="request_timeout" class="w-25"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="mt32">Optimization Weights</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="distance_penalty_per_km"/>
+                                <field name="distance_penalty_per_km" class="w-25"/>
+                                <div class="text-muted">
+                                    Points deducted per km of driving distance.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="cluster_bonus"/>
+                                <field name="cluster_bonus" class="w-25"/>
+                                <div class="text-muted">
+                                    Bonus for tasks sharing the same postal code.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt8 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="overdue_multiplier"/>
+                                <field name="overdue_multiplier" class="w-25"/>
+                                <div class="text-muted">
+                                    Multiplier for the exponential overdue urgency term.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="overdue_base"/>
+                                <field name="overdue_base" class="w-25"/>
+                                <div class="text-muted">
+                                    Exponential base (urgency = multiplier × base ^ overdue_days).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt8 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="critical_overdue_days"/>
+                                <field name="critical_overdue_days" class="w-25"/>
+                                <div class="text-muted">
+                                    After this many days overdue, the task becomes a mandatory
+                                    "magnet" anchor in the route.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

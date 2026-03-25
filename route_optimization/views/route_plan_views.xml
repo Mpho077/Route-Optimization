@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Route Plan Form View -->
+    <record id="route_plan_view_form" model="ir.ui.view">
+        <field name="name">route.plan.form</field>
+        <field name="model">route.plan</field>
+        <field name="arch" type="xml">
+            <form string="Route Plan">
+                <header>
+                    <button name="action_reoptimize"
+                            string="Re-optimize"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state == 'done'"/>
+                    <button name="action_view_map"
+                            string="View Map"
+                            type="object"
+                            class="btn-secondary"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,optimized,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="technician_id"/>
+                            <field name="task_count"/>
+                        </group>
+                        <group>
+                            <field name="total_duration_display"/>
+                            <field name="total_distance_display"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tasks (Optimized Order)">
+                            <field name="task_ids" mode="list">
+                                <list default_order="route_order asc">
+                                    <field name="route_order" string="#"/>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="job_category"/>
+                                    <field name="estimated_duration_hours"/>
+                                    <field name="overdue_days"/>
+                                    <field name="is_route_magnet"/>
+                                    <field name="stage_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Route Map">
+                            <div class="o_route_map_container">
+                                <field name="id" invisible="1"/>
+                                <div id="route_map_widget"
+                                     class="o_route_map"
+                                     style="height: 500px; width: 100%;"/>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Route Plan List View -->
+    <record id="route_plan_view_list" model="ir.ui.view">
+        <field name="name">route.plan.list</field>
+        <field name="model">route.plan</field>
+        <field name="arch" type="xml">
+            <list string="Route Plans" default_order="date desc">
+                <field name="date"/>
+                <field name="technician_id"/>
+                <field name="task_count"/>
+                <field name="total_duration_display" string="Drive Time"/>
+                <field name="total_distance_display" string="Distance"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Route Plan Search View -->
+    <record id="route_plan_view_search" model="ir.ui.view">
+        <field name="name">route.plan.search</field>
+        <field name="model">route.plan</field>
+        <field name="arch" type="xml">
+            <search string="Route Plans">
+                <field name="technician_id"/>
+                <field name="date"/>
+                <filter name="filter_today" string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_this_week" string="This Week"
+                        domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),
+                                 ('date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_technician" string="Technician"
+                            context="{'group_by': 'technician_id'}"/>
+                    <filter name="group_date" string="Date"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Menu Action -->
+    <record id="route_plan_action" model="ir.actions.act_window">
+        <field name="name">Route Plans</field>
+        <field name="res_model">route.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="route_plan_view_search"/>
+        <field name="context">{'search_default_filter_today': 1}</field>
+    </record>
+
+    <!-- Add menu under Field Service -->
+    <menuitem id="menu_route_optimization"
+              name="Route Optimization"
+              parent="industry_fsm.fsm_menu_root"
+              sequence="30"/>
+    <menuitem id="menu_route_plans"
+              name="Route Plans"
+              parent="menu_route_optimization"
+              action="route_plan_action"
+              sequence="10"/>
+</odoo>
