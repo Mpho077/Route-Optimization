@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Controller template for the full-page map view -->
+    <template id="route_map_page" name="Route Map">
+        <html>
+            <head>
+                <link rel="stylesheet"
+                      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+                      crossorigin=""/>
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                        crossorigin=""></script>
+                <style>
+                    #route-map { height: 90vh; width: 100%; }
+                    .task-popup { font-size: 13px; }
+                    .task-popup .order { font-weight: bold; font-size: 16px; }
+                </style>
+            </head>
+            <body>
+            <div id="route-map"></div>
+            <script type="text/javascript">
+                var routeData = <t t-raw="route_data_json"/>;
+                var map = L.map('route-map');
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+
+                if (routeData.tasks &amp;&amp; routeData.tasks.length) {
+                    var bounds = [];
+                    routeData.tasks.forEach(function(task) {
+                        if (task.lat &amp;&amp; task.lng) {
+                            var marker = L.marker([task.lat, task.lng]).addTo(map);
+                            marker.bindPopup(
+                                '&lt;div class="task-popup"&gt;' +
+                                '&lt;span class="order"&gt;#' + task.order + '&lt;/span&gt; ' +
+                                task.name + '&lt;br/&gt;' +
+                                task.partner + '&lt;br/&gt;' +
+                                task.category +
+                                '&lt;/div&gt;'
+                            );
+                            bounds.push([task.lat, task.lng]);
+                        }
+                    });
+                    if (routeData.geometry &amp;&amp; routeData.geometry.type === 'LineString') {
+                        var coords = routeData.geometry.coordinates.map(function(c) {
+                            return [c[1], c[0]];
+                        });
+                        L.polyline(coords, {color: '#4a90d9', weight: 4}).addTo(map);
+                    }
+                    if (bounds.length) {
+                        map.fitBounds(bounds, {padding: [30, 30]});
+                    }
+                } else {
+                    map.setView([59.9139, 10.7522], 10);
+                }
+            </script>
+            </body>
+        </html>
+    </template>
+</odoo>
