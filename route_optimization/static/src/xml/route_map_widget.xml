@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="route_optimization.RouteMapWidget">
+        <div class="o_route_map_widget">
+            <div t-ref="mapContainer" class="o_route_map" style="height: 500px; width: 100%;"/>
+        </div>
+    </t>
+</templates>
